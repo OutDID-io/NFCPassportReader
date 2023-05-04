@@ -417,6 +417,25 @@ public class NFCPassportModel {
 
     }
 
+    public func getSodHashesAndAlgorithm () throws -> (String, [DataGroupId : String]) {
+      guard let sod = getDataGroup(.SOD) as? SOD else {
+        throw PassiveAuthenticationError.SODMissing("No SOD found" )
+      }
+
+      // Get SOD Content and verify that its correctly signed by the Document Signing Certificate
+      var signedData : Data
+      do {
+        signedData = try OpenSSLUtils.verifyAndReturnSODEncapsulatedDataUsingCMS(sod: sod)
+      } catch {
+        signedData = try sod.getEncapsulatedContent()
+      }
+
+      let asn1Data = try OpenSSLUtils.ASN1Parse( data: signedData )
+      let (sodHashAlgorythm, sodHashes) = try parseSODSignatureContent( asn1Data )
+
+      return (sodHashAlgorythm, sodHashes)
+    }
+
     private func ensureReadDataNotBeenTamperedWith( useCMSVerification: Bool ) throws  {
         guard let sod = getDataGroup(.SOD) as? SOD else {
             throw PassiveAuthenticationError.SODMissing("No SOD found" )
