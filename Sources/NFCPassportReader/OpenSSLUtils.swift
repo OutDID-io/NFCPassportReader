@@ -51,7 +51,7 @@ public class OpenSSLUtils {
         return str
     }
     
-    static func pubKeyToPEM( pubKey: OpaquePointer ) -> String {
+    public static func pubKeyToPEM( pubKey: OpaquePointer ) -> String {
         
         let out = BIO_new(BIO_s_mem())!
         defer { BIO_free( out) }
