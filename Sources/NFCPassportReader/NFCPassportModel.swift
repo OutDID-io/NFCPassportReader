@@ -425,7 +425,7 @@ public class NFCPassportModel {
       // Get SOD Content and verify that its correctly signed by the Document Signing Certificate
       var signedData : Data
       do {
-        signedData = try OpenSSLUtils.verifyAndReturnSODEncapsulatedDataUsingCMS(sod: sod)
+        signedData = try OpenSSLUtils.verifyAndReturnSODEncapsulatedData(sod: sod)
       } catch {
         signedData = try sod.getEncapsulatedContent()
       }
