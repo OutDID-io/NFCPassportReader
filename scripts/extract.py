@@ -43,7 +43,7 @@ def main( filename ):
         try:
             extractCertsFromMasterlist( ml )
         except Exception as e:
-            print( "Error extracting certs from masterlist") 
+            print( "Error extracting certs from masterlist")
             print( "Skipping this masterlist - certs from this list will not be included.")
 
     print( "====================================" )
@@ -51,7 +51,7 @@ def main( filename ):
 
 
 def readAndExtractLDIFFile( file ):
-    
+
     adding = False
     certs = []
     cns = []
@@ -60,7 +60,7 @@ def readAndExtractLDIFFile( file ):
         for line in inf:
             if line.startswith( "cn: "):
                 cn = line[4:]
-            elif line.startswith( "CscaMasterListData:: "):
+            elif line.startswith( "CscaMasterListData:: ") or line.startswith( "pkdMasterListContent:: "):
                 cert = line[21:]
                 adding = True
             elif not line.startswith(" ") and adding == True:
@@ -115,9 +115,9 @@ def extractCertsFromMasterlist( masterList ):
     with open("masterList.pem", "ab") as f:
         for c in uniqueCerts:
             f.write(c)
-            
+
 def extractPEMCertificates( signedData ):
-    global certNr 
+    global certNr
     print( "Extracting all certificates from payload" )
     cmd = f"openssl asn1parse -inform der -i"
     (data, err) = execute( cmd, signedData )
@@ -126,7 +126,7 @@ def extractPEMCertificates( signedData ):
     valid = False
     certs = []
 
-    certCount = len([i for i in lines if "d=2" in i]) 
+    certCount = len([i for i in lines if "d=2" in i])
     for line in lines:
         if re.search( r":d=1", line ):
             valid = False
@@ -148,7 +148,7 @@ def extractPEMCertificates( signedData ):
                 certs.append(cert)
             else:
                 print( "Failed match")
-                
+
     print( f"\nExtracted {len(certs)} certs")
     return certs
 
