@@ -417,11 +417,7 @@ public class NFCPassportModel {
 
     }
 
-    public func getSodHashesAndAlgorithm () throws -> (String, [DataGroupId : String]) {
-      guard let sod = getDataGroup(.SOD) as? SOD else {
-        throw PassiveAuthenticationError.SODMissing("No SOD found" )
-      }
-
+    public func getSodHashesAndAlgorithm (sod: SOD) throws -> (String, [DataGroupId : String]) {
       // Get SOD Content and verify that its correctly signed by the Document Signing Certificate
       var signedData : Data
       do {
@@ -434,6 +430,14 @@ public class NFCPassportModel {
       let (sodHashAlgorythm, sodHashes) = try parseSODSignatureContent( asn1Data )
 
       return (sodHashAlgorythm, sodHashes)
+    }
+
+    public func getSodHashesAndAlgorithm () throws -> (String, [DataGroupId : String]) {
+      guard let sod = getDataGroup(.SOD) as? SOD else {
+        throw PassiveAuthenticationError.SODMissing("No SOD found" )
+      }
+
+      return try getSodHashesAndAlgorithm(sod: sod)
     }
 
     private func ensureReadDataNotBeenTamperedWith( useCMSVerification: Bool ) throws  {
@@ -495,7 +499,7 @@ public class NFCPassportModel {
     /// Parses an text ASN1 structure, and extracts the Hash Algorythm and Hashes contained from the Octect strings
     /// - Parameter content: the text ASN1 stucure format
     /// - Returns: The Hash Algorythm used - either SHA1 or SHA256, and a dictionary of hashes for the datagroups (currently only DG1 and DG2 are handled)
-    private func parseSODSignatureContent( _ content : String ) throws -> (String, [DataGroupId : String]){
+    public func parseSODSignatureContent( _ content : String ) throws -> (String, [DataGroupId : String]){
         var currentDG = ""
         var sodHashAlgo = ""
         var sodHashes :  [DataGroupId : String] = [:]
