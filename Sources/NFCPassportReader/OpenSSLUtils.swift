@@ -278,7 +278,7 @@ public class OpenSSLUtils {
     /// Parses a signed data structures encoded in ASN1 format and returns the structure in text format
     /// - Parameter data: The data to be parsed in ASN1 format
     /// - Returns: The parsed data as A String
-    static func ASN1Parse( data: Data ) throws -> String {
+    public static func ASN1Parse( data: Data ) throws -> String {
         
         guard let out = BIO_new(BIO_s_mem()) else { throw OpenSSLError.UnableToParseASN1("Unable to allocate output buffer") }
         defer { BIO_free(out) }
