@@ -275,14 +275,13 @@ public class NFCPassportModel {
     ///         Currently defaulting to manual verification - hoping this will replace the CMS verification totally
     ///         CMS Verification currently there just in case
     public func verifyPassport( masterListURL: URL?, useCMSVerification : Bool = false ) {
-        if let masterListURL = masterListURL {
-            do {
-                try validateAndExtractSigningCertificates( masterListURL: masterListURL )
-            } catch let error {
-                verificationErrors.append( error )
-            }
+
+        do {
+            try validateAndExtractSigningCertificates( masterListURL: masterListURL )
+        } catch let error {
+            verificationErrors.append( error )
         }
-        
+
         do {
             try ensureReadDataNotBeenTamperedWith( useCMSVerification : useCMSVerification )
         } catch let error {
