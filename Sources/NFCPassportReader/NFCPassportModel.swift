@@ -393,7 +393,7 @@ public class NFCPassportModel {
         return revoked
     }
 
-    private func validateAndExtractSigningCertificates( masterListURL: URL ) throws {
+    private func validateAndExtractSigningCertificates( masterListURL: URL? ) throws {
         self.passportCorrectlySigned = false
         
         guard let sod = getDataGroup(.SOD) else {
@@ -404,13 +404,13 @@ public class NFCPassportModel {
         let cert = try OpenSSLUtils.getX509CertificatesFromPKCS7( pkcs7Der: data ).first!
         self.certificateSigningGroups[.documentSigningCertificate] = cert
 
-        let rc = OpenSSLUtils.verifyTrustAndGetIssuerCertificate( x509:cert, CAFile: masterListURL )
-        switch rc {
-        case .success(let csca):
-            self.certificateSigningGroups[.issuerSigningCertificate] = csca
-        case .failure(let error):
-            throw error
-        }
+        // let rc = OpenSSLUtils.verifyTrustAndGetIssuerCertificate( x509:cert, CAFile: masterListURL )
+        // switch rc {
+        // case .success(let csca):
+        //     self.certificateSigningGroups[.issuerSigningCertificate] = csca
+        // case .failure(let error):
+        //     throw error
+        // }
                 
         Log.debug( "Passport passed SOD Verification" )
         self.passportCorrectlySigned = true
