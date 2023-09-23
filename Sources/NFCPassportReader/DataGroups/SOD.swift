@@ -236,4 +236,23 @@ public class SOD : DataGroup {
         // rsassaPss => pss        
         return signatureAlgo.value
     }
+
+    public func getLdsVersion() -> String? {
+        guard let signedData = asn1.getChild(1)?.getChild(0),
+              let rawSeq = signedData.getChild(2)?.getChild(1)?.getChild(0)?.value
+              /* let ldsVersion = signedData.getChild(2).getChild(1)?.getChild(1)?*/ else {
+
+          return nil
+        }
+
+        let p = SimpleASN1DumpParser()
+        do {
+          let seq = try p.parse(data: Data(hexRepToBin(rawSeq)))
+
+          let ldsVersion = seq.getChild(3)?.getChild(0)?.value
+          return ldsVersion
+        } catch {
+          return nil
+        }
+  }
 }
