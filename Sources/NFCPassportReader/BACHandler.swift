@@ -47,14 +47,14 @@ public class BACHandler {
         
         // get Challenge
         Logger.bac.debug( "BACHandler - Getting initial challenge" )
-        let response = try await tagReader.getChallenge()
-    
+        let response = try await tagReader.getChallenge() // returns random nonce
         Logger.bac.debug( "DATA - \(response.data)" )
-        
+        Logger.bac.debug( "DATA STATUS - \(response.sw1); \(response.sw2)" )
+
         Logger.bac.debug( "BACHandler - Doing mutual authentication" )
         let cmd_data = self.authentication(rnd_icc: [UInt8](response.data))
         let maResponse = try await tagReader.doMutualAuthentication(cmdData: Data(cmd_data))
-        Logger.bac.debug( "DATA - \(maResponse.data)" )
+        Logger.bac.debug( "DATA STATUS - \(maResponse.sw1); \(maResponse.sw2)" )
         guard maResponse.data.count > 0 else {
             throw NFCPassportReaderError.InvalidMRZKey
         }
@@ -90,15 +90,15 @@ public class BACHandler {
     func generateInitialKseed(kmrz : String ) -> [UInt8] {
         
         Logger.bac.debug("Calculate the SHA-1 hash of MRZ_information")
-        Logger.bac.debug("\tMRZ KEY - \(kmrz)")
+        Logger.bac.debug("\tMRZ KEY LENGTH - \(kmrz.count)")
         let hash = calcSHA1Hash( [UInt8](kmrz.data(using:.utf8)!) )
         
-        Logger.bac.debug("\tsha1(MRZ_information): \(binToHexRep(hash))")
-        
+        // Logger.bac.debug("\tsha1(MRZ_information): \(binToHexRep(hash))")
+
         let subHash = Array(hash[0..<16])
         Logger.bac.debug("Take the most significant 16 bytes to form the Kseed")
-        Logger.bac.debug("\tKseed: \(binToHexRep(subHash))" )
-        
+        // Logger.bac.debug("\tKseed: \(binToHexRep(subHash))" )
+
         return Array(subHash)
     }
     
@@ -163,14 +163,14 @@ public class BACHandler {
     /// @type data: a binary string
     /// @return: A set of two 16 bytes keys (KSenc, KSmac) and the SSC
     public func sessionKeys(data : [UInt8] ) throws -> ([UInt8], [UInt8], [UInt8]) {
-        Logger.bac.debug("Decrypt and verify received data and compare received RND.IFD with generated RND.IFD \(binToHexRep(self.ksmac))" )
-        
+        Logger.bac.debug("Decrypt and verify received data and compare received RND.IFD with generated RND.IFD") // \(binToHexRep(self.ksmac))" )
+
         let response = tripleDESDecrypt(key: self.ksenc, message: [UInt8](data[0..<32]), iv: [0,0,0,0,0,0,0,0] )
 
         let response_kicc = [UInt8](response[16..<32])
         let Kseed = xor(self.kifd, response_kicc)
         Logger.bac.debug("Calculate XOR of Kifd and Kicc")
-        Logger.bac.debug("\tKseed: \(binToHexRep(Kseed))" )
+//        Logger.bac.debug("\tKseed: \(binToHexRep(Kseed))" )
         
         let smskg = SecureMessagingSessionKeyGenerator()
         let KSenc = try smskg.deriveKey(keySeed: Kseed, mode: .ENC_MODE)
@@ -180,13 +180,13 @@ public class BACHandler {
 //        let KSmac = self.keyDerivation(kseed: Kseed,c: KMAC)
         
         Logger.bac.debug("Calculate Session Keys (KSenc and KSmac) using Appendix 5.1")
-        Logger.bac.debug("\tKSenc: \(binToHexRep(KSenc))" )
-        Logger.bac.debug("\tKSmac: \(binToHexRep(KSmac))" )
+//        Logger.bac.debug("\tKSenc: \(binToHexRep(KSenc))" )
+//        Logger.bac.debug("\tKSmac: \(binToHexRep(KSmac))" )
         
         
         let ssc = [UInt8](self.rnd_icc.suffix(4) + self.rnd_ifd.suffix(4))
         Logger.bac.debug("Calculate Send Sequence Counter")
-        Logger.bac.debug("\tSSC: \(binToHexRep(ssc))" )
+//        Logger.bac.debug("\tSSC: \(binToHexRep(ssc))" )
         return (KSenc, KSmac, ssc)
     }
     

@@ -547,7 +547,7 @@ public class OpenSSLUtils {
         CMAC_Update(ctx, message, message.count);
         CMAC_Final(ctx, &mac, &maclen);
         
-        Logger.openSSL.debug( "aesMac - mac - \(binToHexRep(mac))" )
+        Logger.openSSL.debug( "aesMac - mac" ) // - \(binToHexRep(mac))" )
         
         return [UInt8](mac[0..<maclen])
     }

@@ -200,7 +200,7 @@ public class TagReader {
             )
             resp = try await self.send( cmd: cmd )
 
-            Logger.tagReader.debug( "TagReader - got resp - \(binToHexRep(resp.data, asArray: true)), sw1 : \(resp.sw1), sw2 : \(resp.sw2)" )
+            Logger.tagReader.debug( "TagReader - got resp - \(resp.data.count), sw1 : \(resp.sw1), sw2 : \(resp.sw2)" )
             data += resp.data
             
             remaining -= resp.data.count
@@ -254,7 +254,7 @@ public class TagReader {
         var toSend = cmd
         if let sm = secureMessaging {
             toSend = try sm.protect(apdu:cmd)
-            Logger.tagReader.debug("TagReader - [SM] \(toSend)" )
+//            Logger.tagReader.debug("TagReader - [SM] \(toSend)" )
         }
         
         var (data, sw1, sw2) = try await tag.sendCommand(apdu: toSend)
@@ -274,9 +274,9 @@ public class TagReader {
         
         if let sm = self.secureMessaging {
             rep = try sm.unprotect(rapdu:rep)
-            Logger.tagReader.debug("\(String(format:"TagReader [SM - unprotected] \(binToHexRep(rep.data, asArray:true)), sw1:0x%02x sw2:0x%02x", rep.sw1, rep.sw2))" )
+          Logger.tagReader.debug("\(String(format:"TagReader [SM - unprotected], sw1:0x%02x sw2:0x%02x", rep.sw1, rep.sw2))" )
         } else {
-            Logger.tagReader.debug("\(String(format:"TagReader [unprotected] \(binToHexRep(rep.data, asArray:true)), sw1:0x%02x sw2:0x%02x", rep.sw1, rep.sw2))" )
+            Logger.tagReader.debug("\(String(format:"TagReader [unprotected], sw1:0x%02x sw2:0x%02x", rep.sw1, rep.sw2))" )
             
         }
         

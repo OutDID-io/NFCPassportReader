@@ -100,8 +100,8 @@ public class PACEHandler {
         Logger.pace.debug("cipherAlg - \(self.cipherAlg)" )
         Logger.pace.debug("digestAlg - \(self.digestAlg)" )
         Logger.pace.debug("keyLength - \(self.keyLength)" )
-        Logger.pace.debug("keyLength - \(mrzKey)" )
-        Logger.pace.debug("paceKey - \(binToHexRep(self.paceKey, asArray:true))" )
+//        Logger.pace.debug("keyLength - \(mrzKey)" )
+//        Logger.pace.debug("paceKey - \(binToHexRep(self.paceKey, asArray:true))" )
 
         // First start the initial auth call
         _ = try await tagReader.sendMSESetATMutualAuth(oid: paceOID, keyType: paceKeyType)
@@ -207,7 +207,7 @@ public class PACEHandler {
         let piccMappingEncodedPublicKey = try unwrapDO(tag: 0x82, wrappedData: response.data)
             
         Logger.pace.debug( "Received passports public mapping key")
-        Logger.pace.debug( "   public mapping key - \(binToHexRep(piccMappingEncodedPublicKey, asArray: true))")
+//        Logger.pace.debug( "   public mapping key - \(binToHexRep(piccMappingEncodedPublicKey, asArray: true))")
 
         // Do mapping agreement
 
@@ -278,7 +278,7 @@ public class PACEHandler {
             throw NFCPassportReaderError.PACEError( "Step3 KeyEx", "Unable to decode passports ephemeral key" )
         }
 
-        Logger.pace.debug( "Received passports ephemeral public key - \(binToHexRep(passportEncodedPublicKey!, asArray: true))" )
+        Logger.pace.debug( "Received passports ephemeral public key" ) // - \(binToHexRep(passportEncodedPublicKey!, asArray: true))" )
         return (ephemeralKeyPair, passportPublicKey)
     }
     

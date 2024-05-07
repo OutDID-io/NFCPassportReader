@@ -302,8 +302,8 @@ public class NFCPassportModel {
         self.activeAuthenticationSignature = signature
         
         Logger.passportReader.debug( "Active Authentication")
-        Logger.passportReader.debug( "   challange - \(binToHexRep(challenge))")
-        Logger.passportReader.debug( "   signature - \(binToHexRep(signature))")
+//        Logger.passportReader.debug( "   challange - \(binToHexRep(challenge))")
+//        Logger.passportReader.debug( "   signature - \(binToHexRep(signature))")
 
         // Get AA Public key
         self.activeAuthenticationPassed = false
@@ -555,7 +555,7 @@ public class NFCPassportModel {
         }
 
         Logger.passportReader.debug( "Parse SOD - Using Algo - \(sodHashAlgo)" )
-        Logger.passportReader.debug( "      - Hashes     - \(sodHashes)" )
+//        Logger.passportReader.debug( "      - Hashes     - \(sodHashes)" )
         
         return (sodHashAlgo, sodHashes)
     }
