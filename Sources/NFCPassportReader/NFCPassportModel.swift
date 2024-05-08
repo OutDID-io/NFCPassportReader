@@ -486,7 +486,7 @@ public class NFCPassportModel {
             
             var match = true
             if computedHashVal != sodHashVal {
-                errors += "\(id) invalid hash:\n  SOD hash:\(sodHashVal)\n   Computed hash:\(computedHashVal)\n"
+                errors += "\(id) invalid hash\n"
                 match = false
             }
 
