@@ -238,6 +238,36 @@ public class SOD : DataGroup {
         return signatureAlgo.value
     }
 
+  public class PSSParameters {
+    public var digestAlgo: String, mgfDigestAlgo: String, saltLength: String
+
+    init(digestAlgo: String, mgfDigestAlgo: String, saltLength: String) {
+      self.digestAlgo = digestAlgo
+      self.mgfDigestAlgo = mgfDigestAlgo
+      self.saltLength = saltLength
+    }
+  }
+  /// Gets the signature algorithm parameters when RSA PSS is used (if present)
+  /// - Returns: the PSS signature algorithm parameters used
+  /// - Throws: Error if we can't find or read any parameter
+  public func getSignatureParametersForPSS( ) throws -> PSSParameters {
+
+    guard let signedData = asn1.getChild(1)?.getChild(0),
+          let signerInfo = signedData.getChild(4),
+          let signatureData = signerInfo.getChild(0)?.getChild(4)?.getChild(1) else {
+
+      throw OpenSSLError.UnableToExtractSignedDataFromPKCS7("Data in invalid format")
+    }
+
+    guard let digestAlgo = signatureData.getChild(0)?.getChild(0)?.value,
+          let mgfDigestAlgo = signatureData.getChild(1)?.getChild(1)?.getChild(0)?.value,
+          let saltLength = signatureData.getChild(2)?.value else {
+      throw OpenSSLError.UnableToExtractSignedDataFromPKCS7("PSS data in invalid format")
+          }
+
+    return PSSParameters(digestAlgo: digestAlgo, mgfDigestAlgo: mgfDigestAlgo, saltLength: saltLength)
+  }
+
     public func getLdsVersion() -> String? {
         guard let signedData = asn1.getChild(1)?.getChild(0),
               let rawSeq = signedData.getChild(2)?.getChild(1)?.getChild(0)?.value
