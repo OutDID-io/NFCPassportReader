@@ -259,11 +259,11 @@ public class SOD : DataGroup {
       throw OpenSSLError.UnableToExtractSignedDataFromPKCS7("Data in invalid format")
     }
 
-    guard let digestAlgo = signatureData.getChild(0)?.getChild(0)?.value,
-          let mgfDigestAlgo = signatureData.getChild(1)?.getChild(1)?.getChild(0)?.value,
-          let saltLength = signatureData.getChild(2)?.value else {
+    guard let digestAlgo = signatureData.getChild(0)?.getChild(0)?.getChild(0)?.value,
+          let mgfDigestAlgo = signatureData.getChild(1)?.getChild(0)?.getChild(1)?.getChild(0)?.value,
+          let saltLength = signatureData.getChild(2)?.getChild(0)?.value else {
       throw OpenSSLError.UnableToExtractSignedDataFromPKCS7("PSS data in invalid format")
-          }
+    }
 
     return PSSParameters(digestAlgo: digestAlgo, mgfDigestAlgo: mgfDigestAlgo, saltLength: saltLength)
   }
