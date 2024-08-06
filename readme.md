@@ -139,3 +139,12 @@ The EPassport section on YobiWiki (http://wiki.yobi.be/wiki/EPassport)  This has
 
 Marcin Krzyżanowski for his OpenSSL-Universal repo.
 
+
+## Outdid fork changes
+
+Outdid has made the following changes so that this implementation can be used in our mobile app:
+- Modified some debugging logs to not include personally identifiable information to have more information when debugging NFC chip related issues. Also, some logs have been omitted if they included personal information or were too low-level for the Outdid team's current understanding.
+- Some Data Group classes like `DataGroupParser` and `SOD` were made public so that they can be imported and used in the Outdid codebase.
+- RSA PSS specific parameter handling and extracting LDS Version Info have been added to `SOD`.
+- The need for a master list of trusted country keys and the country key verification have been removed.
+- The functions `getSodHashesAndAlgorithm(sod: SOD)` and `getSodHashesAndAlgorithm()` have been added.
